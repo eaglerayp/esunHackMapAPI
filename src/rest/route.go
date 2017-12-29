@@ -28,7 +28,7 @@ type Response struct {
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
@@ -45,8 +45,8 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 
 func InitHackAPI() *gin.Engine {
-	router := gin.Default()
-
+	router := gin.New()
+	router.Use(CORSMiddleware())
 	router.POST("/echo", func(c *gin.Context) {
 		inputByte, _ := ioutil.ReadAll(c.Request.Body)
 		c.String(http.StatusOK, string(inputByte))
@@ -117,6 +117,6 @@ func InitHackAPI() *gin.Engine {
 		}
 		c.JSON(http.StatusOK, activities)
 	})
-	router.Use(CORSMiddleware())
+
 	return router
 }
